@@ -1,0 +1,15 @@
+{
+  "name": "trade-game",
+  "version": "1.0.0",
+  "description": "Trading game for Telegram Mini App",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "node api/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "ccxt": "^4.1.0"
+  }
+}
