@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Trade Game</title>
+  <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
   <style>
     * {
       margin: 0;
@@ -33,14 +34,13 @@
       background: #000000;
     }
 
-    /* iOS 26 Header */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       padding: 12px 0 20px 0;
       border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     .header-left {
@@ -88,7 +88,58 @@
       color: #ffffff;
     }
 
-    /* iOS 26 Glass Cards */
+    /* Chart */
+    .chart-container {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      border: 0.5px solid rgba(255, 255, 255, 0.06);
+      padding: 4px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    #chart {
+      width: 100%;
+      height: 320px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .chart-controls {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px 12px 12px;
+      flex-wrap: wrap;
+    }
+
+    .chart-btn {
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 0.5px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .chart-btn:active {
+      transform: scale(0.95);
+    }
+
+    .chart-btn.active {
+      background: rgba(48, 209, 88, 0.15);
+      border-color: rgba(48, 209, 88, 0.3);
+      color: #30d158;
+    }
+
+    .chart-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Glass Cards */
     .glass-card {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(40px) saturate(180%);
@@ -108,7 +159,6 @@
       margin-bottom: 16px;
     }
 
-    /* Assets Grid - iOS 26 Style */
     .assets-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -120,12 +170,18 @@
       border-radius: 16px;
       padding: 16px;
       border: 0.5px solid rgba(255, 255, 255, 0.06);
+      cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .asset-item:active {
       transform: scale(0.97);
       background: rgba(255, 255, 255, 0.06);
+    }
+
+    .asset-item.selected {
+      border-color: rgba(48, 209, 88, 0.3);
+      background: rgba(48, 209, 88, 0.05);
     }
 
     .asset-symbol {
@@ -149,13 +205,7 @@
       font-weight: 400;
     }
 
-    .asset-change {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.2);
-      margin-top: 2px;
-    }
-
-    /* Trade Section - iOS 26 */
+    /* Trade Section */
     .trade-section {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(40px) saturate(180%);
@@ -196,6 +246,7 @@
       background-repeat: no-repeat;
       background-position: right 14px center;
       cursor: pointer;
+      font-family: inherit;
     }
 
     .trade-select:focus {
@@ -218,6 +269,7 @@
       font-size: 16px;
       font-weight: 400;
       min-width: 0;
+      font-family: inherit;
     }
 
     .trade-input:focus {
@@ -254,6 +306,7 @@
       cursor: pointer;
       transition: all 0.15s ease;
       letter-spacing: 0.3px;
+      font-family: inherit;
     }
 
     .btn:active {
@@ -301,7 +354,7 @@
       color: #ff453a;
     }
 
-    /* History - iOS 26 */
+    /* History */
     .history-section {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(40px) saturate(180%);
@@ -404,7 +457,6 @@
       margin-top: 1px;
     }
 
-    /* Loading */
     .loading {
       text-align: center;
       padding: 30px 0;
@@ -412,7 +464,6 @@
       font-size: 15px;
     }
 
-    /* Responsive */
     @media (max-width: 380px) {
       .container {
         padding: 16px 12px 80px 12px;
@@ -436,6 +487,10 @@
         padding: 12px 14px;
         font-size: 15px;
       }
+
+      #chart {
+        height: 240px;
+      }
     }
 
     @media (min-width: 431px) {
@@ -444,7 +499,6 @@
       }
     }
 
-    /* Smooth animations */
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -458,7 +512,8 @@
 
     .glass-card,
     .trade-section,
-    .history-section {
+    .history-section,
+    .chart-container {
       animation: fadeIn 0.4s ease-out;
     }
 
@@ -482,6 +537,19 @@
       <div class="header-right">
         <div class="portfolio-label">Портфель</div>
         <div class="portfolio-count" id="portfolioCount">0</div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-container">
+      <div id="chart"></div>
+      <div class="chart-controls">
+        <button class="chart-btn active" data-interval="1m">1М</button>
+        <button class="chart-btn" data-interval="5m">5М</button>
+        <button class="chart-btn" data-interval="15m">15М</button>
+        <button class="chart-btn" data-interval="1h">1Ч</button>
+        <button class="chart-btn" data-interval="4h">4Ч</button>
+        <button class="chart-btn" data-interval="1d">1Д</button>
       </div>
     </div>
 
@@ -529,8 +597,14 @@
       balance: 400,
       portfolio: {},
       prices: {},
-      trades: []
+      trades: [],
+      chartData: [],
+      selectedSymbol: 'BTC',
+      chartInterval: '1m'
     };
+
+    let chart = null;
+    let series = null;
 
     const balanceEl = document.getElementById('balance');
     const assetsGrid = document.getElementById('assetsGrid');
@@ -551,11 +625,97 @@
       return response.json();
     }
 
+    function generateChartData(symbol, interval, count = 100) {
+      const basePrice = state.prices[symbol] || 65000;
+      const volatility = symbol === 'BTC' ? 0.002 : symbol === 'ETH' ? 0.003 : 0.005;
+      const data = [];
+      let price = basePrice * (0.95 + Math.random() * 0.1);
+      
+      const now = Date.now();
+      const intervalMs = {
+        '1m': 60000,
+        '5m': 300000,
+        '15m': 900000,
+        '1h': 3600000,
+        '4h': 14400000,
+        '1d': 86400000
+      }[interval] || 60000;
+
+      for (let i = count; i >= 0; i--) {
+        const change = (Math.random() - 0.48) * volatility * price;
+        price = Math.max(price + change, basePrice * 0.8);
+        data.push({
+          time: new Date(now - i * intervalMs).toISOString(),
+          value: price
+        });
+      }
+      return data;
+    }
+
+    function initChart() {
+      const chartElement = document.getElementById('chart');
+      
+      if (chart) {
+        chart.remove();
+        chart = null;
+        series = null;
+      }
+
+      chart = LightweightCharts.createChart(chartElement, {
+        width: chartElement.clientWidth,
+        height: 320,
+        layout: {
+          background: { color: 'rgba(0, 0, 0, 0)' },
+          textColor: 'rgba(255, 255, 255, 0.5)',
+        },
+        grid: {
+          vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
+          horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
+        },
+        rightPriceScale: {
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+        },
+        timeScale: {
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          timeVisible: true,
+          secondsVisible: false,
+        },
+      });
+
+      series = chart.addLineSeries({
+        color: '#30d158',
+        lineWidth: 2,
+        crosshairMarkerVisible: true,
+        crosshairMarkerRadius: 4,
+        lastValueVisible: true,
+        priceLineVisible: false,
+      });
+
+      updateChartData();
+
+      window.addEventListener('resize', () => {
+        chart.applyOptions({ width: chartElement.clientWidth });
+      });
+    }
+
+    function updateChartData() {
+      if (!series) return;
+      
+      const data = generateChartData(
+        state.selectedSymbol,
+        state.chartInterval,
+        100
+      );
+      state.chartData = data;
+      series.setData(data.map(d => ({ time: d.time, value: d.value })));
+    }
+
     async function fetchPrices() {
       try {
         const data = await apiCall('prices');
         state.prices = data;
         renderAssets();
+        updateChartData();
       } catch (error) {
         console.error('Error fetching prices:', error);
       }
@@ -652,16 +812,27 @@
         const price = state.prices[symbol] || 0;
         const amount = state.portfolio[symbol] || 0;
         const value = (amount * price).toFixed(2);
+        const selected = state.selectedSymbol === symbol ? 'selected' : '';
         
         return `
-          <div class="asset-item">
+          <div class="asset-item ${selected}" data-symbol="${symbol}">
             <div class="asset-symbol">${symbol}</div>
             <div class="asset-price">$${price.toFixed(2)}</div>
-            <div class="asset-amount">${amount.toFixed(4)}</div>
-            <div class="asset-change">$${value}</div>
+            <div class="asset-amount">${amount.toFixed(4)} ($${value})</div>
           </div>
         `;
       }).join('');
+
+      document.querySelectorAll('.asset-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const symbol = el.dataset.symbol;
+          state.selectedSymbol = symbol;
+          symbolSelect.value = symbol;
+          document.querySelectorAll('.asset-item').forEach(a => a.classList.remove('selected'));
+          el.classList.add('selected');
+          updateChartData();
+        });
+      });
     }
 
     function renderHistory() {
@@ -695,7 +866,25 @@
       telegram.expand();
     }
 
+    document.querySelectorAll('.chart-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.chartInterval = btn.dataset.interval;
+        updateChartData();
+      });
+    });
+
+    symbolSelect.addEventListener('change', () => {
+      state.selectedSymbol = symbolSelect.value;
+      document.querySelectorAll('.asset-item').forEach(el => {
+        el.classList.toggle('selected', el.dataset.symbol === state.selectedSymbol);
+      });
+      updateChartData();
+    });
+
     async function init() {
+      initChart();
       await fetchPrices();
       await initUser();
       setInterval(fetchPrices, 5000);
@@ -706,7 +895,7 @@
 
     init();
 
-    console.log('Trade Game initialized');
+    console.log('Trade Game initialized with chart');
   </script>
 </body>
 </html>
