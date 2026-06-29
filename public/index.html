@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Trade Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Helvetica, Arial, sans-serif;
+      background: #000000;
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+
+    .container {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 20px 16px 100px 16px;
+      background: #000000;
+    }
+
+    /* iOS 26 Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 12px 0 20px 0;
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 24px;
+    }
+
+    .header-left {
+      flex: 1;
+    }
+
+    .header-title {
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .balance-main {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .balance-main span {
+      font-size: 24px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.3);
+      letter-spacing: 0;
+    }
+
+    .header-right {
+      text-align: right;
+      padding-top: 4px;
+    }
+
+    .portfolio-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 4px;
+    }
+
+    .portfolio-count {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    /* iOS 26 Glass Cards */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-radius: 20px;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .glass-card-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    /* Assets Grid - iOS 26 Style */
+    .assets-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .asset-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 16px;
+      border: 0.5px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.2s ease;
+    }
+
+    .asset-item:active {
+      transform: scale(0.97);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .asset-symbol {
+      font-size: 17px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 2px;
+    }
+
+    .asset-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #30d158;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+
+    .asset-amount {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.3);
+      font-weight: 400;
+    }
+
+    .asset-change {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.2);
+      margin-top: 2px;
+    }
+
+    /* Trade Section - iOS 26 */
+    .trade-section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-radius: 20px;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .trade-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .trade-input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .trade-select {
+      flex: 1;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 500;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+    }
+
+    .trade-select:focus {
+      outline: none;
+      border-color: rgba(48, 209, 88, 0.3);
+    }
+
+    .trade-select option {
+      background: #1c1c1e;
+      color: #ffffff;
+    }
+
+    .trade-input {
+      flex: 1.5;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 400;
+      min-width: 0;
+    }
+
+    .trade-input:focus {
+      outline: none;
+      border-color: rgba(48, 209, 88, 0.3);
+    }
+
+    .trade-input::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .trade-input::-webkit-outer-spin-button,
+    .trade-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .trade-input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .trade-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-buy {
+      background: #30d158;
+      color: #000000;
+    }
+
+    .btn-buy:active:not(:disabled) {
+      background: #28b94a;
+    }
+
+    .btn-sell {
+      background: #ff453a;
+      color: #ffffff;
+    }
+
+    .btn-sell:active:not(:disabled) {
+      background: #e63b31;
+    }
+
+    .trade-message {
+      margin-top: 12px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+      text-align: center;
+      min-height: 22px;
+      font-weight: 400;
+    }
+
+    .trade-message.success {
+      color: #30d158;
+    }
+
+    .trade-message.error {
+      color: #ff453a;
+    }
+
+    /* History - iOS 26 */
+    .history-section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-radius: 20px;
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      padding: 20px;
+    }
+
+    .history-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .history-list {
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .history-empty {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.15);
+      font-size: 15px;
+      padding: 20px 0;
+      font-weight: 400;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .history-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .history-icon.buy {
+      background: rgba(48, 209, 88, 0.15);
+      color: #30d158;
+    }
+
+    .history-icon.sell {
+      background: rgba(255, 69, 58, 0.15);
+      color: #ff453a;
+    }
+
+    .history-info {
+      flex: 1;
+    }
+
+    .history-symbol {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .history-detail {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.3);
+      margin-top: 1px;
+    }
+
+    .history-right {
+      text-align: right;
+    }
+
+    .history-amount {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .history-price {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.3);
+      margin-top: 1px;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 30px 0;
+      color: rgba(255, 255, 255, 0.15);
+      font-size: 15px;
+    }
+
+    /* Responsive */
+    @media (max-width: 380px) {
+      .container {
+        padding: 16px 12px 80px 12px;
+      }
+      
+      .balance-main {
+        font-size: 34px;
+      }
+      
+      .asset-price {
+        font-size: 17px;
+      }
+      
+      .trade-input-group {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .trade-select,
+      .trade-input {
+        padding: 12px 14px;
+        font-size: 15px;
+      }
+    }
+
+    @media (min-width: 431px) {
+      .container {
+        padding: 24px 20px 100px 20px;
+      }
+    }
+
+    /* Smooth animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .glass-card,
+    .trade-section,
+    .history-section {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .asset-item {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .asset-item:nth-child(2) { animation-delay: 0.05s; }
+    .asset-item:nth-child(3) { animation-delay: 0.1s; }
+    .asset-item:nth-child(4) { animation-delay: 0.15s; }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="header-title">Баланс</div>
+        <div class="balance-main">$<span id="balance">400</span></div>
+      </div>
+      <div class="header-right">
+        <div class="portfolio-label">Портфель</div>
+        <div class="portfolio-count" id="portfolioCount">0</div>
+      </div>
+    </div>
+
+    <!-- Assets -->
+    <div class="glass-card">
+      <div class="glass-card-title">Активы</div>
+      <div class="assets-grid" id="assetsGrid">
+        <div class="loading">Загрузка...</div>
+      </div>
+    </div>
+
+    <!-- Trade -->
+    <div class="trade-section">
+      <div class="trade-label">Торговля</div>
+      <div class="trade-input-group">
+        <select class="trade-select" id="symbolSelect">
+          <option value="BTC">BTC</option>
+          <option value="ETH">ETH</option>
+          <option value="SOL">SOL</option>
+          <option value="TON">TON</option>
+        </select>
+        <input type="number" class="trade-input" id="amountInput" placeholder="Количество" min="0.0001" step="0.0001">
+      </div>
+      <div class="trade-buttons">
+        <button class="btn btn-buy" id="buyBtn">Купить</button>
+        <button class="btn btn-sell" id="sellBtn">Продать</button>
+      </div>
+      <div class="trade-message" id="tradeMessage"></div>
+    </div>
+
+    <!-- History -->
+    <div class="history-section">
+      <div class="history-label">История</div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Нет сделок</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const telegram = window.Telegram?.WebApp;
+    const userId = telegram?.initDataUnsafe?.user?.id || 'demo_user_' + Date.now();
+
+    let state = {
+      balance: 400,
+      portfolio: {},
+      prices: {},
+      trades: []
+    };
+
+    const balanceEl = document.getElementById('balance');
+    const assetsGrid = document.getElementById('assetsGrid');
+    const symbolSelect = document.getElementById('symbolSelect');
+    const amountInput = document.getElementById('amountInput');
+    const buyBtn = document.getElementById('buyBtn');
+    const sellBtn = document.getElementById('sellBtn');
+    const tradeMessage = document.getElementById('tradeMessage');
+    const historyList = document.getElementById('historyList');
+    const portfolioCount = document.getElementById('portfolioCount');
+
+    async function apiCall(endpoint, options = {}) {
+      const response = await fetch(`/api/${endpoint}`, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options,
+        body: options.body ? JSON.stringify(options.body) : undefined
+      });
+      return response.json();
+    }
+
+    async function fetchPrices() {
+      try {
+        const data = await apiCall('prices');
+        state.prices = data;
+        renderAssets();
+      } catch (error) {
+        console.error('Error fetching prices:', error);
+      }
+    }
+
+    async function initUser() {
+      try {
+        const data = await apiCall('init', {
+          method: 'POST',
+          body: { userId }
+        });
+        state.balance = data.balance;
+        state.portfolio = data.portfolio || {};
+        state.trades = data.trades || [];
+        updateUI();
+      } catch (error) {
+        console.error('Error initializing user:', error);
+      }
+    }
+
+    async function executeTrade(type) {
+      const symbol = symbolSelect.value;
+      const amount = parseFloat(amountInput.value);
+      
+      if (!amount || amount <= 0) {
+        tradeMessage.textContent = 'Введите корректное количество';
+        tradeMessage.className = 'trade-message error';
+        return;
+      }
+
+      const price = state.prices[symbol];
+      if (!price) {
+        tradeMessage.textContent = 'Цена недоступна';
+        tradeMessage.className = 'trade-message error';
+        return;
+      }
+
+      buyBtn.disabled = true;
+      sellBtn.disabled = true;
+
+      try {
+        const result = await apiCall('trade', {
+          method: 'POST',
+          body: { userId, symbol, type, amount }
+        });
+
+        if (result.error) {
+          tradeMessage.textContent = result.error;
+          tradeMessage.className = 'trade-message error';
+        } else {
+          state.balance = result.balance;
+          state.portfolio = result.portfolio;
+          state.trades.push(result.trade);
+          updateUI();
+          tradeMessage.textContent = `${type === 'buy' ? 'Куплено' : 'Продано'} ${amount} ${symbol}`;
+          tradeMessage.className = 'trade-message success';
+          amountInput.value = '';
+        }
+      } catch (error) {
+        tradeMessage.textContent = 'Ошибка выполнения';
+        tradeMessage.className = 'trade-message error';
+        console.error(error);
+      }
+
+      buyBtn.disabled = false;
+      sellBtn.disabled = false;
+
+      setTimeout(() => {
+        if (tradeMessage.textContent) {
+          tradeMessage.textContent = '';
+          tradeMessage.className = 'trade-message';
+        }
+      }, 3000);
+    }
+
+    function updateUI() {
+      balanceEl.textContent = state.balance.toFixed(2);
+      
+      const assetCount = Object.keys(state.portfolio).length;
+      portfolioCount.textContent = assetCount;
+      
+      renderAssets();
+      renderHistory();
+    }
+
+    function renderAssets() {
+      if (Object.keys(state.prices).length === 0) {
+        assetsGrid.innerHTML = '<div class="loading">Загрузка...</div>';
+        return;
+      }
+
+      const symbols = ['BTC', 'ETH', 'SOL', 'TON'];
+      assetsGrid.innerHTML = symbols.map(symbol => {
+        const price = state.prices[symbol] || 0;
+        const amount = state.portfolio[symbol] || 0;
+        const value = (amount * price).toFixed(2);
+        
+        return `
+          <div class="asset-item">
+            <div class="asset-symbol">${symbol}</div>
+            <div class="asset-price">$${price.toFixed(2)}</div>
+            <div class="asset-amount">${amount.toFixed(4)}</div>
+            <div class="asset-change">$${value}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderHistory() {
+      if (state.trades.length === 0) {
+        historyList.innerHTML = '<div class="history-empty">Нет сделок</div>';
+        return;
+      }
+
+      const recentTrades = state.trades.slice(-15).reverse();
+      historyList.innerHTML = recentTrades.map(trade => `
+        <div class="history-item">
+          <div class="history-left">
+            <div class="history-icon ${trade.type}">
+              ${trade.type === 'buy' ? '↑' : '↓'}
+            </div>
+            <div class="history-info">
+              <div class="history-symbol">${trade.symbol}</div>
+              <div class="history-detail">${new Date(trade.timestamp).toLocaleTimeString()}</div>
+            </div>
+          </div>
+          <div class="history-right">
+            <div class="history-amount">${trade.amount.toFixed(4)}</div>
+            <div class="history-price">$${trade.price.toFixed(2)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    if (telegram) {
+      telegram.ready();
+      telegram.expand();
+    }
+
+    async function init() {
+      await fetchPrices();
+      await initUser();
+      setInterval(fetchPrices, 5000);
+    }
+
+    buyBtn.addEventListener('click', () => executeTrade('buy'));
+    sellBtn.addEventListener('click', () => executeTrade('sell'));
+
+    init();
+
+    console.log('Trade Game initialized');
+  </script>
+</body>
+</html>
